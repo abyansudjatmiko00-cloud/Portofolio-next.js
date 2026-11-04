@@ -73,7 +73,7 @@ export default function Kontak() {
             </li>
             <li>
               <a href="mailto:emailkamu@contoh.com" className="font-semibold text-aksen hover:underline">
-                emailkamu@contoh.com
+                abyansudjatmiko00@gmail.com
               </a>
             </li>
           </ul>
