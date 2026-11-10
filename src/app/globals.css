@@ -1,7 +1,62 @@
+
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-utama: #1D3557;
   --color-aksen: #C1121F;
   --color-latar: #F1FAEE;
+}
+
+/* Pengaturan tampilan terang */
+body {
+  background-color: #F1FAEE;
+  color: #1f2937;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Pengaturan tampilan gelap */
+.dark body {
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+/* Mengubah latar kartu menjadi gelap */
+.dark .bg-white {
+  background-color: #1f2937;
+}
+
+/* Mengubah warna teks */
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #e5e7eb;
+}
+
+/* Mengubah warna border */
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: #374151;
+}
+
+/* Mengubah latar abu-abu */
+.dark .bg-gray-100,
+.dark .bg-gray-200 {
+  background-color: #374151;
+}
+
+/* Mengubah warna teks abu-abu */
+.dark .text-gray-500 {
+  color: #d1d5db;
+}
+
+/* Memperjelas teks warna utama saat Dark Mode */
+.dark .text-utama {
+  color: #f9fafb;
+}
+
+/* Memperjelas teks aksen saat Dark Mode */
+.dark .text-aksen {
+  color: #fca5a5;
 }
