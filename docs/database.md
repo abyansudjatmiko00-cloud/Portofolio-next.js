@@ -38,9 +38,17 @@ Database menggunakan Supabase (PostgreSQL).
 
 ## 4. Keamanan Database
 
-- Database menggunakan Supabase.
-- Row Level Security (RLS) digunakan untuk mengatur akses data.
-- Tabel projects dan skills dapat diberikan kebijakan akses baca publik.
-- Tabel messages tidak diberikan akses baca publik.
+- Database menggunakan Supabase PostgreSQL.
+- Row Level Security (RLS) aktif pada ketiga tabel.
+- Tabel projects memiliki policy SELECT untuk anon dan authenticated.
+- Tabel skills memiliki policy SELECT untuk anon dan authenticated.
+- Tabel messages memiliki policy INSERT untuk anon dan authenticated.
+- Tabel messages tidak memiliki policy SELECT publik.
 - Publishable key digunakan untuk akses dari aplikasi.
 - Secret key tidak boleh dibagikan atau dimasukkan ke GitHub.
+
+## 5. Data Awal
+
+- projects: 3 data proyek.
+- skills: 5 data keterampilan.
+- messages: kosong, menunggu pesan dari form kontak.
