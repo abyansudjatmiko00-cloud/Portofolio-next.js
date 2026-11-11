@@ -1,21 +1,46 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { proyek } from "@/data/proyek";
+import { supabase } from "@/lib/supabase";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+
+async function getProyek(slug) {
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Gagal mengambil detail proyek:", error.message);
+    throw new Error("Gagal mengambil data proyek.");
+  }
+
+  return data;
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const item = proyek.find((p) => p.slug === slug);
+  const item = await getProyek(slug);
 
   if (!item) {
     return { title: "Proyek tidak ditemukan" };
   }
-  return { title: item.judul, description: item.deskripsi };
+
+  return {
+    title: item.judul,
+    description: item.deskripsi,
+  };
 }
 
 export default async function DetailProyek({ params }) {
   const { slug } = await params;
-  const item = proyek.find((p) => p.slug === slug);
+  const item = await getProyek(slug);
 
   if (!item) {
     notFound();
@@ -23,47 +48,45 @@ export default async function DetailProyek({ params }) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
-      <Link href="/proyek" className="text-sm font-semibold text-aksen hover:underline">
+      <Link
+        href="/proyek"
+        className="text-sm font-semibold text-aksen hover:underline"
+      >
         &larr; Kembali ke daftar proyek
       </Link>
-      <h1 className="mt-4 text-3xl font-bold text-utama md:text-4xl">{item.judul}</h1>
-      <p className="mt-2 text-gray-600">
-        {item.kategori} &middot; Dibuat tahun {item.tahun}
-      </p>
-      <Image
-        src={item.gambar}
-        alt={`Tangkapan layar ${item.judul}`}
-        width={640}
-        height={420}
-        loading="eager"
-        className="mt-6 h-auto w-full rounded-xl border border-gray-200"
-      />
-      <p className="mt-6 text-lg">{item.deskripsi}</p>
 
-      <h2 className="mt-8 text-2xl font-bold text-utama">Fitur Utama</h2>
-      <ul className="mt-3 list-disc pl-5">
-        {item.fitur.map((f) => (
-          <li key={f}>{f}</li>
-        ))}
-      </ul>
+      <h1 className="mt-4 text-3xl font-bold text-utama md:text-4xl">
+        {item.judul}
+      </h1>
 
-      <h2 className="mt-8 text-2xl font-bold text-utama">Teknologi</h2>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {item.teknologi.map((t) => (
-          <span key={t} className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-utama border border-gray-200">
-            {t}
-          </span>
-        ))}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <Badge variant="secondary">{item.kategori}</Badge>
+        <span className="text-sm text-gray-600">
+          Minggu {item.minggu}
+        </span>
       </div>
 
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-8 inline-block rounded-lg bg-utama px-5 py-2 font-semibold text-white"
-      >
-        Kunjungi website ↗
-      </a>
+      {item.gambar_url && (
+        <Image
+          src={item.gambar_url}
+          alt={`Tangkapan layar ${item.judul}`}
+          width={1200}
+          height={800}
+          unoptimized
+          className="mt-6 h-auto w-full rounded-xl border border-gray-200"
+        />
+      )}
+
+      <Card className="mt-6">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-bold text-utama">
+            Deskripsi Proyek
+          </h2>
+          <p className="mt-3 leading-relaxed text-gray-700">
+            {item.deskripsi}
+          </p>
+        </CardContent>
+      </Card>
     </main>
   );
 }

@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+import { Button } from "@/components/ui/button";
 
 const menu = [
   { href: "/", label: "Beranda" },
@@ -12,22 +13,35 @@ const menu = [
   { href: "/kontak", label: "Kontak" },
 ];
 
+function subscribe(callback) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getDarkMode() {
+  return localStorage.getItem("darkMode") === "true";
+}
+
+function getServerDarkMode() {
+  return false;
+}
+
 export default function Navbar() {
   const pathname = usePathname();
-  const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    const tersimpan = localStorage.getItem("darkMode") === "true";
-    setDarkMode(tersimpan);
-    document.documentElement.classList.toggle("dark", tersimpan);
-  }, []);
+  const darkMode = useSyncExternalStore(
+    subscribe,
+    getDarkMode,
+    getServerDarkMode
+  );
 
   function toggleDarkMode() {
     const modeBaru = !darkMode;
 
-    setDarkMode(modeBaru);
     localStorage.setItem("darkMode", String(modeBaru));
     document.documentElement.classList.toggle("dark", modeBaru);
+
+    window.dispatchEvent(new Event("storage"));
   }
 
   return (
@@ -40,20 +54,21 @@ export default function Navbar() {
         <div className="flex flex-wrap items-center gap-4">
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {menu.map((item) => {
-              let kelas = "text-gray-200 hover:text-white";
-              let aktif = pathname.startsWith(item.href);
-
-              if (item.href === "/") {
-                aktif = pathname === "/";
-              }
-
-              if (aktif) {
-                kelas = "font-bold text-white underline underline-offset-8";
-              }
+              const aktif =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
 
               return (
                 <li key={item.href}>
-                  <Link href={item.href} className={kelas}>
+                  <Link
+                    href={item.href}
+                    className={
+                      aktif
+                        ? "font-bold text-white underline underline-offset-8"
+                        : "text-gray-200 hover:text-white"
+                    }
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -61,12 +76,13 @@ export default function Navbar() {
             })}
           </ul>
 
-          <button
+          <Button
             onClick={toggleDarkMode}
-            className="rounded-lg border border-white px-3 py-2 text-sm font-semibold hover:bg-white hover:text-utama"
+            variant="outline"
+            className="border-white bg-transparent text-white hover:bg-white hover:text-utama"
           >
             {darkMode ? "☀️ Terang" : "🌙 Gelap"}
-          </button>
+          </Button>
         </div>
       </nav>
     </header>

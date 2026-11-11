@@ -1,5 +1,11 @@
 
 import FormKontak from "@/components/FormKontak";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
 
 export const metadata = {
   title: "Kontak",
@@ -19,37 +25,41 @@ export default function Kontak() {
       </p>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:col-span-2">
-          <FormKontak />
-        </div>
+        <Card className="md:col-span-2">
+          <CardContent className="p-6">
+            <FormKontak />
+          </CardContent>
+        </Card>
 
-        <aside className="h-fit rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-3 text-2xl font-bold text-utama">
-            Temukan Saya di
-          </h2>
+        <Card className="h-fit">
+          <CardHeader>
+            <CardTitle>Temukan Saya di</CardTitle>
+          </CardHeader>
 
-          <ul className="space-y-2">
-            <li>
-              <a
-                href="https://github.com/abyansudjatmiko00-cloud"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-aksen hover:underline"
-              >
-                GitHub
-              </a>
-            </li>
+          <CardContent>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href="https://github.com/abyansudjatmiko00-cloud"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-aksen hover:underline"
+                >
+                  GitHub
+                </a>
+              </li>
 
-            <li>
-              <a
-                href="mailto:abyansudjatmiko00@gmail.com"
-                className="font-semibold text-aksen hover:underline"
-              >
-                Email
-              </a>
-            </li>
-          </ul>
-        </aside>
+              <li>
+                <a
+                  href="mailto:abyansudjatmiko00@gmail.com"
+                  className="font-semibold text-aksen hover:underline"
+                >
+                  Email
+                </a>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

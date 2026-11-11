@@ -1,5 +1,5 @@
 
-import { proyek } from "@/data/proyek";
+import { supabase } from "@/lib/supabase";
 import FilterProyek from "@/components/FilterProyek";
 
 export const metadata = {
@@ -7,7 +7,30 @@ export const metadata = {
   description: "Daftar proyek website karya Muhammad Abyan Sudjatmiko.",
 };
 
-export default function DaftarProyek() {
+export default async function DaftarProyek() {
+  const { data: proyek, error } = await supabase
+    .from("projects")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Gagal mengambil data proyek:", error.message);
+
+    return (
+      <main className="mx-auto max-w-5xl px-4 py-10">
+        <h1 className="text-3xl font-bold">Proyek Saya</h1>
+        <p className="mt-4 text-red-500">
+          Gagal mengambil data proyek dari Supabase.
+        </p>
+      </main>
+    );
+  }
+
+  const dataProyek = (proyek || []).map((item) => ({
+    ...item,
+    gambar: item.gambar_url,
+  }));
+
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-10">
       <h1 className="text-3xl font-bold text-utama md:text-4xl">
@@ -19,7 +42,7 @@ export default function DaftarProyek() {
         Klik kartu untuk melihat detailnya.
       </p>
 
-      <FilterProyek dataProyek={proyek} />
+      <FilterProyek dataProyek={dataProyek} />
     </main>
   );
 }

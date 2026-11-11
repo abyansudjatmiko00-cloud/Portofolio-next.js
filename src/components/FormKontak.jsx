@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const isian =
   "mt-1 w-full rounded-lg border border-gray-300 bg-white p-2 text-gray-800";
@@ -82,7 +83,9 @@ export default function FormKontak() {
           placeholder="Contoh: Budi Santoso"
           className={isian}
         />
-        {error.nama && <p className="mt-1 text-sm text-red-600">{error.nama}</p>}
+        {error.nama && (
+          <p className="mt-1 text-sm text-red-600">{error.nama}</p>
+        )}
       </div>
 
       <div>
@@ -98,7 +101,9 @@ export default function FormKontak() {
           placeholder="nama@contoh.com"
           className={isian}
         />
-        {error.email && <p className="mt-1 text-sm text-red-600">{error.email}</p>}
+        {error.email && (
+          <p className="mt-1 text-sm text-red-600">{error.email}</p>
+        )}
       </div>
 
       <div>
@@ -114,7 +119,9 @@ export default function FormKontak() {
           placeholder="Contoh: 081234567890"
           className={isian}
         />
-        {error.nomorHP && <p className="mt-1 text-sm text-red-600">{error.nomorHP}</p>}
+        {error.nomorHP && (
+          <p className="mt-1 text-sm text-red-600">{error.nomorHP}</p>
+        )}
       </div>
 
       <div>
@@ -133,7 +140,9 @@ export default function FormKontak() {
           <option value="pertanyaan">Pertanyaan</option>
           <option value="lainnya">Lainnya</option>
         </select>
-        {error.keperluan && <p className="mt-1 text-sm text-red-600">{error.keperluan}</p>}
+        {error.keperluan && (
+          <p className="mt-1 text-sm text-red-600">{error.keperluan}</p>
+        )}
       </div>
 
       <div>
@@ -150,15 +159,14 @@ export default function FormKontak() {
           placeholder="Tulis pesanmu (maksimal 300 karakter)"
           className={isian}
         />
-        {error.pesan && <p className="mt-1 text-sm text-red-600">{error.pesan}</p>}
+        {error.pesan && (
+          <p className="mt-1 text-sm text-red-600">{error.pesan}</p>
+        )}
       </div>
 
-      <button
-        type="submit"
-        className="rounded-lg bg-utama px-5 py-2 font-semibold text-white"
-      >
-        Kirim
-      </button>
+      <Button type="submit" className="bg-utama text-white hover:opacity-90">
+        Kirim Pesan
+      </Button>
 
       {berhasil && (
         <p className="rounded-lg bg-green-100 p-3 text-green-800">

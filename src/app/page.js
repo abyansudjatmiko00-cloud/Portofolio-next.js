@@ -1,21 +1,39 @@
+
 import Link from "next/link";
 import Hero from "@/components/Hero";
-import Kartu from "@/components/Kartu";
 import ProyekCard from "@/components/ProyekCard";
-import SkillCard from "@/components/SkillCard";
-import { proyek } from "@/data/proyek";
+import { supabase } from "@/lib/supabase";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-const skills = [
-  { nama: "HTML", level: "Menengah" },
-  { nama: "CSS", level: "Menengah" },
-  { nama: "Git dan GitHub", level: "Menengah" },
-  { nama: "Desain poster dengan Canva", level: "Menengah" },
-  { nama: "JavaScript", level: "Dasar" },
-];
+export default async function Home() {
+  const [skillsResult, proyekResult] = await Promise.all([
+    supabase
+      .from("skills")
+      .select("*")
+      .order("created_at", { ascending: true }),
 
-const proyekTerbaru = proyek.slice(-3);
+    supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(3),
+  ]);
 
-export default function Home() {
+  if (skillsResult.error) {
+    console.error("Gagal mengambil skills:", skillsResult.error.message);
+  }
+
+  if (proyekResult.error) {
+    console.error("Gagal mengambil proyek:", proyekResult.error.message);
+  }
+
+  const skills = skillsResult.data || [];
+  const proyekTerbaru = proyekResult.data || [];
+
   return (
     <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-10">
       <Hero
@@ -23,21 +41,45 @@ export default function Home() {
         tagline="Siswa kelas XI SMK Negeri 1 Pasuruan, calon Junior Web Developer di Kelas Industri UBIG."
       />
 
-      <Kartu judul="Keahlian">
+      <section className="mt-10">
+        <h2 className="mb-4 text-2xl font-bold text-utama">
+          Keahlian
+        </h2>
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {skills.map((skill) => (
-            <SkillCard key={skill.nama} nama={skill.nama} level={skill.level} />
+            <Card key={skill.id}>
+              <CardContent className="flex items-center justify-between gap-3 p-5">
+                <h3 className="font-semibold text-utama">
+                  {skill.nama}
+                </h3>
+
+                <Badge variant="secondary">
+                  {skill.level}
+                </Badge>
+              </CardContent>
+            </Card>
           ))}
         </div>
-      </Kartu>
+
+        {skills.length === 0 && (
+          <p className="text-gray-600">
+            Belum ada data keahlian.
+          </p>
+        )}
+      </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 text-2xl font-bold text-utama">Proyek Terbaru</h2>
+        <h2 className="mb-4 text-2xl font-bold text-utama">
+          Proyek Terbaru
+        </h2>
+
         <div className="grid gap-6 md:grid-cols-3">
           {proyekTerbaru.map((item) => (
-            <ProyekCard key={item.slug} proyek={item} />
+            <ProyekCard key={item.id} proyek={item} />
           ))}
         </div>
+
         <Link
           href="/proyek"
           className="mt-6 inline-block rounded-lg bg-utama px-5 py-2 font-semibold text-white"
