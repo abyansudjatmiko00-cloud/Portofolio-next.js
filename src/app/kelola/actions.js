@@ -1,170 +1,207 @@
-
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sudahMasuk } from "@/lib/pin";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
-// Mengambil data dari formulir
-function ambilData(formData) {
-  return {
-    judul: String(formData.get("judul") || "").trim(),
-    slug: String(formData.get("slug") || "").trim(),
-    kategori: String(formData.get("kategori") || "").trim(),
-    minggu: Number(formData.get("minggu")),
-    deskripsi: String(formData.get("deskripsi") || "").trim(),
-    fitur: String(formData.get("fitur") || "")
-      .split("\n")
-      .map((item) => item.trim())
-      .filter(Boolean),
-    gambar_url: String(formData.get("gambar_url") || "").trim(),
-  };
-}
+export async function masukKelola(stateSebelum, formData) {
+  const pin = formData.get("pin");
 
-// Memvalidasi data proyek
-function validasi(data) {
-  if (
-    !data.judul ||
-    !data.slug ||
-    !data.kategori ||
-    !data.deskripsi ||
-    !data.gambar_url
-  ) {
-    return "Semua kolom wajib diisi.";
-  }
-
-  if (/\s/.test(data.slug)) {
-    return "Slug tidak boleh mengandung spasi.";
-  }
-
-  if (!Number.isInteger(data.minggu) || data.minggu < 1) {
-    return "Minggu harus berupa angka minimal 1.";
-  }
-
-  if (!data.gambar_url.startsWith("/proyek/")) {
-    return "Lokasi gambar harus diawali /proyek/.";
-  }
-
-  const kategoriValid = [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "Next.js",
-  ];
-
-  if (!kategoriValid.includes(data.kategori)) {
-    return "Kategori tidak valid.";
-  }
-
-  return null;
-}
-
-// Login admin menggunakan PIN
-export async function masukAdmin(formData) {
-  const pinInput = String(formData.get("pin") || "");
-
-  if (
-    !process.env.ADMIN_PIN ||
-    pinInput !== process.env.ADMIN_PIN
-  ) {
-    redirect("/kelola?error=pin");
+  if (pin !== process.env.ADMIN_PIN) {
+    return { error: "PIN salah. Coba lagi." };
   }
 
   const kue = await cookies();
-
-  kue.set("pin_admin", pinInput, {
+  kue.set("pin_admin", pin, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 8,
+    sameSite: "strict",
+    maxAge: 60 * 60,
   });
 
-  redirect("/kelola");
+  return {};
 }
 
-// Logout admin
-export async function keluarAdmin() {
+export async function keluarKelola() {
   const kue = await cookies();
   kue.delete("pin_admin");
-
-  redirect("/kelola");
 }
 
-// Menambahkan proyek
-export async function tambahProyek(formData) {
-  if (!(await sudahMasuk())) redirect("/kelola");
-
-  const data = ambilData(formData);
-  const errorValidasi = validasi(data);
-
-  if (errorValidasi) {
-    redirect("/kelola?error=validasi");
+export async function sematkanPesan(formData) {
+  if (!(await sudahMasuk())) {
+    return;
   }
 
-  const { error } = await supabaseAdmin
-    .from("projects")
-    .insert([data]);
+  const id = formData.get("id");
+  const sematkan = formData.get("sematkan") === "ya";
 
-  if (error) {
-    console.error("Gagal menambah proyek:", error.message);
-    redirect("/kelola?error=tambah");
-  }
-
-  revalidatePath("/");
-  revalidatePath("/proyek");
-  redirect("/kelola");
-}
-
-// Mengubah proyek
-export async function ubahProyek(id, formData) {
-  if (!(await sudahMasuk())) redirect("/kelola");
-
-  const data = ambilData(formData);
-  const errorValidasi = validasi(data);
-
-  if (errorValidasi) {
-    redirect("/kelola?error=validasi");
-  }
-
-  const { error } = await supabaseAdmin
-    .from("projects")
-    .update(data)
+  await supabaseAdmin
+    .from("buku_tamu")
+    .update({ disematkan: sematkan })
     .eq("id", id);
 
-  if (error) {
-    console.error("Gagal mengubah proyek:", error.message);
-    redirect("/kelola?error=ubah");
-  }
-
-  revalidatePath("/");
-  revalidatePath("/proyek");
-  redirect("/kelola");
+  revalidatePath("/kelola");
+  revalidatePath("/buku-tamu");
 }
 
-// Menghapus proyek
-export async function hapusProyek(formData) {
-  if (!(await sudahMasuk())) redirect("/kelola");
+export async function hapusPesan(formData) {
+  if (!(await sudahMasuk())) {
+    return;
+  }
 
   const id = formData.get("id");
 
-  if (!id) {
-    redirect("/kelola?error=id");
+  await supabaseAdmin
+    .from("buku_tamu")
+    .delete()
+    .eq("id", id);
+
+  revalidatePath("/kelola");
+  revalidatePath("/buku-tamu");
+}
+
+const daftarKategori = ["HTML", "CSS", "JavaScript", "Next.js"];
+
+function bacaProyek(formData) {
+  return {
+    judul: formData.get("judul").trim(),
+    slug: formData.get("slug").trim(),
+    kategori: formData.get("kategori").trim(),
+    minggu: formData.get("minggu").trim(),
+    deskripsi: formData.get("deskripsi").trim(),
+    fitur: formData
+      .get("fitur")
+      .split("\n")
+      .map((f) => f.trim())
+      .filter((f) => f !== ""),
+    gambar_url: formData.get("gambar_url").trim(),
+  };
+}
+
+function cekProyek(proyek) {
+  if (
+    proyek.judul === "" ||
+    proyek.slug === "" ||
+    proyek.deskripsi === ""
+  ) {
+    return "Judul, slug, dan deskripsi wajib diisi.";
   }
 
-  const { error } = await supabaseAdmin
+  if (proyek.slug.includes(" ")) {
+    return "Slug tidak boleh memakai spasi. Gunakan tanda hubung, contoh: buku-tamu.";
+  }
+
+  if (!daftarKategori.includes(proyek.kategori)) {
+    return "Kategori harus HTML, CSS, JavaScript, atau Next.js.";
+  }
+
+  if (!proyek.gambar_url.startsWith("/proyek/")) {
+    return "Alamat gambar harus diawali /proyek/, contoh: /proyek/proyek-buku-tamu.png.";
+  }
+
+  return "";
+}
+
+function perbaruiHalaman(slug) {
+  revalidatePath("/");
+  revalidatePath("/proyek");
+  revalidatePath(`/proyek/${slug}`);
+  revalidatePath("/kelola");
+}
+
+export async function tambahProyek(stateSebelum, formData) {
+  const proyek = bacaProyek(formData);
+
+  if (!(await sudahMasuk())) {
+    return {
+      error: "Masukkan PIN dulu di halaman Kelola.",
+      proyek,
+    };
+  }
+
+  const error = cekProyek(proyek);
+
+  if (error !== "") {
+    return { error, proyek };
+  }
+
+  const hasil = await supabaseAdmin
+    .from("projects")
+    .insert(proyek);
+
+  if (hasil.error) {
+    if (hasil.error.code === "23505") {
+      return {
+        error: "Slug sudah dipakai proyek lain.",
+        proyek,
+      };
+    }
+
+    return {
+      error: `Proyek gagal disimpan: ${hasil.error.message}`,
+      proyek,
+    };
+  }
+
+  perbaruiHalaman(proyek.slug);
+  redirect("/kelola");
+}
+
+export async function ubahProyek(stateSebelum, formData) {
+  const proyek = bacaProyek(formData);
+
+  if (!(await sudahMasuk())) {
+    return {
+      error: "Masukkan PIN dulu di halaman Kelola.",
+      proyek,
+    };
+  }
+
+  const error = cekProyek(proyek);
+
+  if (error !== "") {
+    return { error, proyek };
+  }
+
+  const id = formData.get("id");
+
+  const hasil = await supabaseAdmin
+    .from("projects")
+    .update(proyek)
+    .eq("id", id);
+
+  if (hasil.error) {
+    if (hasil.error.code === "23505") {
+      return {
+        error: "Slug sudah dipakai proyek lain.",
+        proyek,
+      };
+    }
+
+    return {
+      error: `Proyek gagal diubah: ${hasil.error.message}`,
+      proyek,
+    };
+  }
+
+  perbaruiHalaman(proyek.slug);
+  redirect("/kelola");
+}
+
+export async function hapusProyek(formData) {
+  if (!(await sudahMasuk())) {
+    return;
+  }
+
+  const id = formData.get("id");
+
+  await supabaseAdmin
     .from("projects")
     .delete()
     .eq("id", id);
 
-  if (error) {
-    console.error("Gagal menghapus proyek:", error.message);
-    redirect("/kelola?error=hapus");
-  }
-
   revalidatePath("/");
   revalidatePath("/proyek");
-  redirect("/kelola");
+  revalidatePath("/kelola");
 }

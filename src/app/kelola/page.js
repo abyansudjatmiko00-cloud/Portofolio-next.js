@@ -1,158 +1,154 @@
-
-import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import { sudahMasuk } from "@/lib/pin";
-import {
-  masukAdmin,
-  keluarAdmin,
-  hapusProyek,
-} from "./actions";
+import FormPin from "@/components/FormPin";
 import KonfirmasiHapus from "@/components/KonfirmasiHapus";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { sudahMasuk } from "@/lib/pin";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  hapusPesan,
+  hapusProyek,
+  keluarKelola,
+  sematkanPesan,
+} from "./actions";
+import Link from "next/link";
 
 export const metadata = {
-  title: "Kelola Proyek",
+  title: "Kelola Data",
 };
 
-export default async function KelolaPage({ searchParams }) {
-  const sudahLogin = await sudahMasuk();
-  const params = await searchParams;
-
-  const gayaKolom =
-    "w-full rounded-lg border-2 border-gray-300 bg-white p-3 text-base font-medium text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
-
-  const gayaTombol =
-    "rounded-lg border border-blue-700 bg-blue-600 px-5 py-3 text-base font-semibold text-white transition hover:bg-blue-700";
-
-  if (!sudahLogin) {
+export default async function Kelola() {
+  if (!(await sudahMasuk())) {
     return (
-      <main className="mx-auto max-w-md px-4 py-16">
-        <div className="rounded-xl border-2 border-gray-300 bg-white p-6 shadow-sm">
-          <h1 className="mb-3 text-3xl font-bold text-gray-900">
-            Login Admin
-          </h1>
-
-          <p className="mb-6 text-base text-gray-600">
-            Masukkan PIN untuk mengelola proyek portofolio.
-          </p>
-
-          {params?.error === "pin" && (
-            <p className="mb-4 rounded-lg border border-red-300 bg-red-100 p-3 text-red-700">
-              PIN yang kamu masukkan salah.
-            </p>
-          )}
-
-          <form action={masukAdmin} className="space-y-4">
-            <div>
-              <label className="mb-2 block font-semibold text-gray-800">
-                PIN Admin
-              </label>
-
-              <input
-                type="password"
-                name="pin"
-                placeholder="Masukkan PIN admin"
-                required
-                className={gayaKolom}
-              />
-            </div>
-
-            <button
-              type="submit"
-              className={`${gayaTombol} w-full`}
-            >
-              Masuk Admin
-            </button>
-          </form>
-        </div>
+      <main className="mx-auto w-full max-w-md px-4 py-10">
+        <h1 className="text-3xl font-bold text-primary">
+          Kelola Data
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          Halaman ini khusus pemilik portofolio.
+        </p>
+        <Card className="mt-6">
+          <CardContent>
+            <FormPin />
+          </CardContent>
+        </Card>
       </main>
     );
   }
 
-  const { data: proyek, error } = await supabaseAdmin
+  const { data: daftarPesan } = await supabaseAdmin
+    .from("buku_tamu")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const { data: daftarProyek } = await supabaseAdmin
     .from("projects")
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Gagal mengambil proyek:", error.message);
-
-    return (
-      <main className="p-8">
-        <p className="font-semibold text-red-700">
-          Gagal mengambil data proyek.
-        </p>
-      </main>
-    );
-  }
-
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Kelola Proyek
-          </h1>
-
-          <p className="mt-2 text-gray-600">
-            Tambah, edit, dan hapus proyek portofolio.
-          </p>
-        </div>
-
-        <form action={keluarAdmin}>
-          <button className="rounded-lg border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-800 hover:bg-gray-100">
+    <main className="mx-auto w-full max-w-3xl px-4 py-10">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-primary">
+          Kelola Data
+        </h1>
+        <form action={keluarKelola}>
+          <Button type="submit" variant="outline">
             Keluar
-          </button>
+          </Button>
         </form>
       </div>
 
-      <Link
-        href="/kelola/proyek/baru"
-        className={gayaTombol + " inline-block"}
-      >
-        + Tambah Proyek
-      </Link>
+      <div className="mt-8 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-primary">
+          Proyek
+        </h2>
+        <Link
+          href="/kelola/proyek/baru"
+          className={buttonVariants()}
+        >
+          Tambah Proyek
+        </Link>
+      </div>
 
-      {params?.error && params.error !== "pin" && (
-        <p className="mt-4 rounded-lg border border-red-300 bg-red-100 p-3 text-red-700">
-          Terjadi kesalahan. Silakan periksa data proyek.
-        </p>
-      )}
-
-      <div className="mt-8 space-y-4">
-        {proyek.length === 0 ? (
-          <p className="text-gray-700">Belum ada proyek.</p>
-        ) : (
-          proyek.map((item) => (
-            <div
-              key={item.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-xl border-2 border-gray-300 bg-white p-5 shadow-sm"
-            >
-              <div>
-                <h2 className="font-bold text-gray-900">
-                  {item.judul}
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600">
-                  {item.kategori} · Minggu {item.minggu}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
+      <div className="mt-4 space-y-3">
+        {daftarProyek &&
+          daftarProyek.map((item) => (
+            <Card key={item.id} size="sm">
+              <CardHeader>
+                <CardTitle>{item.judul}</CardTitle>
+                <CardDescription>
+                  {item.kategori} &middot; {item.minggu}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex gap-2">
                 <Link
                   href={`/kelola/proyek/${item.id}`}
-                  className="rounded-lg border border-blue-600 px-4 py-2 font-semibold text-blue-700 hover:bg-blue-50"
+                  className={buttonVariants({
+                    variant: "outline",
+                    size: "sm",
+                  })}
                 >
-                  Edit
+                  Ubah
                 </Link>
-
                 <KonfirmasiHapus
                   id={item.id}
                   aksi={hapusProyek}
+                  judul="Hapus proyek ini?"
+                  keterangan={`Proyek ${item.judul} akan hilang dari halaman Proyek dan Beranda.`}
                 />
-              </div>
-            </div>
-          ))
-        )}
+              </CardContent>
+            </Card>
+          ))}
+      </div>
+
+      <h2 className="mt-8 text-2xl font-bold text-primary">
+        Pesan Buku Tamu
+      </h2>
+      <div className="mt-4 space-y-4">
+        {daftarPesan &&
+          daftarPesan.map((item) => (
+            <Card key={item.id}>
+              <CardHeader>
+                <CardTitle>{item.nama}</CardTitle>
+                <CardDescription>{item.pesan}</CardDescription>
+                {item.disematkan && <Badge>Disematkan</Badge>}
+              </CardHeader>
+              <CardContent className="flex gap-2">
+                <form action={sematkanPesan}>
+                  <input
+                    type="hidden"
+                    name="id"
+                    value={item.id}
+                  />
+                  <input
+                    type="hidden"
+                    name="sematkan"
+                    value={item.disematkan ? "tidak" : "ya"}
+                  />
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="sm"
+                  >
+                    {item.disematkan ? "Lepas Sematan" : "Sematkan"}
+                  </Button>
+                </form>
+                <KonfirmasiHapus
+                  id={item.id}
+                  aksi={hapusPesan}
+                  judul="Hapus pesan ini?"
+                  keterangan="Pesan buku tamu ini akan dihapus permanen."
+                />
+              </CardContent>
+            </Card>
+          ))}
       </div>
     </main>
   );

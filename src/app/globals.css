@@ -5,67 +5,21 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Warna utama proyek */
 @theme {
-  --color-utama: #1D3557;
-  --color-aksen: #C1121F;
-  --color-latar: #F1FAEE;
+  --color-utama: #1E3A5F;
+  --color-aksen: #A8E1FF;
+  --color-latar: #080808;
+
+  --font-heading: Arial, Helvetica, sans-serif;
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 
-/* Pengaturan tampilan terang */
-body {
-  background-color: #F1FAEE;
-  color: #1f2937;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* Pengaturan tampilan gelap */
-.dark body {
-  background-color: #111827;
-  color: #f3f4f6;
-}
-
-/* Mengubah latar kartu menjadi gelap */
-.dark .bg-white {
-  background-color: #1f2937;
-}
-
-/* Mengubah warna teks */
-.dark .text-gray-800,
-.dark .text-gray-700,
-.dark .text-gray-600 {
-  color: #e5e7eb;
-}
-
-/* Mengubah warna border */
-.dark .border-gray-200,
-.dark .border-gray-300 {
-  border-color: #374151;
-}
-
-/* Mengubah latar abu-abu */
-.dark .bg-gray-100,
-.dark .bg-gray-200 {
-  background-color: #374151;
-}
-
-/* Mengubah warna teks abu-abu */
-.dark .text-gray-500 {
-  color: #d1d5db;
-}
-
-/* Memperjelas teks warna utama saat Dark Mode */
-.dark .text-utama {
-  color: #f9fafb;
-}
-
-/* Memperjelas teks aksen saat Dark Mode */
-.dark .text-aksen {
-  color: #fca5a5;
-}
-
+/* Konfigurasi tema Tailwind dan shadcn */
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-heading: Arial, Helvetica, sans-serif;
+  --font-sans: Arial, Helvetica, sans-serif;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -74,29 +28,39 @@ body {
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
+
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
+
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
+
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
   --color-foreground: var(--foreground);
   --color-background: var(--background);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -106,83 +70,171 @@ body {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* TEMA TERANG */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --background: #F1FAEE;
+  --foreground: #1F2937;
+
+  --card: #FFFFFF;
+  --card-foreground: #1F2937;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #1F2937;
+
+  --primary: #1E3A5F;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #E5E7EB;
+  --secondary-foreground: #1F2937;
+
+  --muted: #E5E7EB;
+  --muted-foreground: #6B7280;
+
+  --accent: #DCEFFA;
+  --accent-foreground: #1E3A5F;
+
+  --destructive: #DC2626;
+
+  --border: #D1D5DB;
+  --input: #D1D5DB;
+  --ring: #1E3A5F;
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1F2937;
+  --sidebar-primary: #1E3A5F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E5E7EB;
+  --sidebar-accent-foreground: #1F2937;
+  --sidebar-border: #D1D5DB;
+  --sidebar-ring: #1E3A5F;
 }
 
+/* TEMA GELAP - SESUAI CONTOH */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #080808;
+  --foreground: #F5F5F5;
+
+  --card: #181818;
+  --card-foreground: #F5F5F5;
+
+  --popover: #181818;
+  --popover-foreground: #F5F5F5;
+
+  --primary: #A8E1FF;
+  --primary-foreground: #101820;
+
+  --secondary: #222222;
+  --secondary-foreground: #F5F5F5;
+
+  --muted: #222222;
+  --muted-foreground: #A3A3A3;
+
+  --accent: #222222;
+  --accent-foreground: #A8E1FF;
+
+  --destructive: #DC2626;
+
+  --border: #292929;
+  --input: #292929;
+  --ring: #A8E1FF;
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+
+  --radius: 0.625rem;
+
+  --sidebar: #181818;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #A8E1FF;
+  --sidebar-primary-foreground: #101820;
+  --sidebar-accent: #222222;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: #292929;
+  --sidebar-ring: #A8E1FF;
 }
 
+/* Pengaturan dasar */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
     @apply font-sans;
   }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+}
+
+/* Transisi kartu dan elemen */
+body,
+header,
+footer,
+main,
+section,
+article {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Warna khusus saat mode gelap */
+.dark body {
+  background-color: #080808;
+  color: #F5F5F5;
+}
+
+/* Kartu pada mode gelap */
+.dark .bg-white {
+  background-color: #181818;
+}
+
+/* Teks pada mode gelap */
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #E5E7EB;
+}
+
+.dark .text-gray-500 {
+  color: #A3A3A3;
+}
+
+/* Border pada mode gelap */
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: #292929;
+}
+
+/* Latar abu-abu pada mode gelap */
+.dark .bg-gray-100,
+.dark .bg-gray-200 {
+  background-color: #222222;
+}
+
+/* Warna utama dan aksen */
+.dark .text-utama {
+  color: #A8E1FF;
+}
+
+.dark .text-aksen {
+  color: #A8E1FF;
 }

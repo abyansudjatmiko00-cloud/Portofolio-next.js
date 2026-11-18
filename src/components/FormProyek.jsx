@@ -1,107 +1,112 @@
 
-export default function FormProyek({
-  proyek = {},
-  aksi,
-  labelTombol = "Simpan Proyek",
-}) {
-  const gayaKolom =
-    "w-full rounded-lg border-4 border-gray-700 bg-white p-4 text-base font-semibold text-black shadow-md outline-none transition focus:border-blue-700 focus:ring-4 focus:ring-blue-200";
+"use client";
 
-  const gayaLabel =
-    "mb-2 block text-base font-extrabold text-black";
+import Link from "next/link";
+import { useActionState } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import TombolKirim from "@/components/TombolKirim";
+
+export default function FormProyek({ aksi, proyek, teksTombol }) {
+  const [state, formAction] = useActionState(aksi, { proyek });
 
   return (
-    <form action={aksi} className="space-y-6">
-      <div>
-        <label className={gayaLabel}>Judul Proyek</label>
-        <input
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="id" value={proyek.id} />
+
+      <div className="space-y-2">
+        <Label htmlFor="judul">Judul</Label>
+        <Input
+          id="judul"
           name="judul"
-          defaultValue={proyek.judul || ""}
-          required
-          className={gayaKolom}
+          placeholder="Contoh: Website Portofolio Pribadi"
+          defaultValue={state.proyek.judul}
         />
       </div>
 
-      <div>
-        <label className={gayaLabel}>Slug</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="slug">Slug</Label>
+        <Input
+          id="slug"
           name="slug"
-          defaultValue={proyek.slug || ""}
-          required
-          className={gayaKolom}
+          placeholder="Contoh: portofolio-pribadi"
+          defaultValue={state.proyek.slug}
         />
       </div>
 
-      <div>
-        <label className={gayaLabel}>Kategori</label>
-        <select
+      <div className="space-y-2">
+        <Label htmlFor="kategori">Kategori</Label>
+        <Input
+          id="kategori"
           name="kategori"
-          defaultValue={proyek.kategori || "Next.js"}
-          className={gayaKolom}
-        >
-          <option>HTML</option>
-          <option>CSS</option>
-          <option>JavaScript</option>
-          <option>Next.js</option>
-        </select>
+          placeholder="Contoh: Next.js"
+          defaultValue={state.proyek.kategori}
+        />
       </div>
 
-      <div>
-        <label className={gayaLabel}>Minggu</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="minggu">Minggu</Label>
+        <Input
+          id="minggu"
           name="minggu"
-          type="number"
-          min="1"
-          defaultValue={proyek.minggu || 15}
-          required
-          className={gayaKolom}
+          placeholder="Contoh: Minggu 15"
+          defaultValue={state.proyek.minggu}
         />
       </div>
 
-      <div>
-        <label className={gayaLabel}>Deskripsi</label>
-        <textarea
+      <div className="space-y-2">
+        <Label htmlFor="deskripsi">Deskripsi</Label>
+        <Textarea
+          id="deskripsi"
           name="deskripsi"
-          defaultValue={proyek.deskripsi || ""}
-          required
-          rows={4}
-          className={gayaKolom}
+          rows={2}
+          placeholder="Contoh: Website untuk menampilkan profil dan hasil proyek saya."
+          defaultValue={state.proyek.deskripsi}
         />
       </div>
 
-      <div>
-        <label className={gayaLabel}>
-          Fitur (satu fitur per baris)
-        </label>
-        <textarea
+      <div className="space-y-2">
+        <Label htmlFor="fitur">Fitur</Label>
+        <Textarea
+          id="fitur"
           name="fitur"
-          defaultValue={
-            Array.isArray(proyek.fitur)
-              ? proyek.fitur.join("\n")
-              : ""
-          }
-          rows={4}
-          className={gayaKolom}
+          rows={3}
+          placeholder={"Contoh:\nTampilan responsif\nHalaman proyek\nNavigasi antarhalaman"}
+          defaultValue={state.proyek.fitur.join("\n")}
         />
+        <p className="text-xs text-muted-foreground">
+          Tulis satu fitur pada setiap baris.
+        </p>
       </div>
 
-      <div>
-        <label className={gayaLabel}>URL Gambar</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="gambar_url">URL Gambar</Label>
+        <Input
+          id="gambar_url"
           name="gambar_url"
-          defaultValue={proyek.gambar_url || ""}
-          required
-          placeholder="/proyek/nama-gambar.png"
-          className={gayaKolom}
+          placeholder="Contoh: /proyek/proyek-portofolio.png"
+          defaultValue={state.proyek.gambar_url}
         />
+        <p className="text-xs text-muted-foreground">
+          Simpan gambar di folder public/proyek.
+        </p>
       </div>
 
-      <button
-        type="submit"
-        className="rounded-lg border-2 border-blue-800 bg-blue-700 px-6 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-blue-800"
-      >
-        {labelTombol}
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <TombolKirim teks={teksTombol} />
+
+        <Link
+          href="/kelola"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          Batal
+        </Link>
+      </div>
+
+      {state.error && (
+        <p className="text-sm text-destructive">{state.error}</p>
+      )}
     </form>
   );
 }

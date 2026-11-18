@@ -1,57 +1,46 @@
-
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import FormProyek from "@/components/FormProyek";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { Card, CardContent } from "@/components/ui/card";
 import { sudahMasuk } from "@/lib/pin";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { ubahProyek } from "../../actions";
 
-export default async function EditProyekPage({ params }) {
+export const metadata = {
+  title: "Ubah Proyek",
+};
+
+export default async function UbahProyek({ params }) {
   if (!(await sudahMasuk())) {
     redirect("/kelola");
   }
 
   const { id } = await params;
 
-  const { data: proyek, error } = await supabaseAdmin
+  const { data: proyek } = await supabaseAdmin
     .from("projects")
     .select("*")
     .eq("id", id)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Gagal mengambil proyek:", error.message);
-    throw new Error("Gagal mengambil data proyek.");
-  }
+    .single();
 
   if (!proyek) {
     notFound();
   }
 
-  const aksiEdit = ubahProyek.bind(null, id);
-
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
-      <Link
-        href="/kelola"
-        className="text-sm font-semibold text-blue-600 hover:underline"
-      >
-        ← Kembali ke Kelola Proyek
-      </Link>
-
-      <h1 className="mb-2 mt-6 text-3xl font-bold">
-        Edit Proyek
+    <main className="mx-auto w-full max-w-2xl px-4 py-10">
+      <h1 className="text-3xl font-bold text-primary">
+        Ubah Proyek
       </h1>
 
-      <p className="mb-8 text-gray-600">
-        Perbarui informasi proyek berikut.
-      </p>
-
-      <FormProyek
-        proyek={proyek}
-        aksi={aksiEdit}
-        labelTombol="Simpan Perubahan"
-      />
+      <Card className="mt-6">
+        <CardContent>
+          <FormProyek
+            aksi={ubahProyek}
+            proyek={proyek}
+            teksTombol="Simpan Perubahan"
+          />
+        </CardContent>
+      </Card>
     </main>
   );
 }

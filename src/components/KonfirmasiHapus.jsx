@@ -1,28 +1,37 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
-"use client";
-
-export default function KonfirmasiHapus({ id, aksi }) {
+export default function KonfirmasiHapus({ id, aksi, judul, keterangan }) {
   return (
-    <form
-      action={aksi}
-      onSubmit={(event) => {
-        const yakin = window.confirm(
-          "Apakah kamu yakin ingin menghapus proyek ini?"
-        );
-
-        if (!yakin) {
-          event.preventDefault();
-        }
-      }}
-    >
-      <input type="hidden" name="id" value={id} />
-
-      <button
-        type="submit"
-        className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-      >
+    <AlertDialog>
+      <AlertDialogTrigger render={<Button variant="destructive" size="sm" />}>
         Hapus
-      </button>
-    </form>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{judul}</AlertDialogTitle>
+          <AlertDialogDescription>{keterangan}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <form action={aksi}>
+          <input type="hidden" name="id" value={id} />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction type="submit" variant="destructive">
+              Ya, hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </form>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

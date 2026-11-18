@@ -3,45 +3,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const menu = [
   { href: "/", label: "Beranda" },
   { href: "/tentang", label: "Tentang" },
   { href: "/proyek", label: "Proyek" },
+  { href: "/buku-tamu", label: "Buku Tamu" },
   { href: "/kontak", label: "Kontak" },
 ];
 
-function subscribe(callback) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
-}
-
-function getDarkMode() {
-  return localStorage.getItem("darkMode") === "true";
-}
-
-function getServerDarkMode() {
-  return false;
-}
-
 export default function Navbar() {
   const pathname = usePathname();
+  const [darkMode, setDarkMode] = useState(false);
 
-  const darkMode = useSyncExternalStore(
-    subscribe,
-    getDarkMode,
-    getServerDarkMode
-  );
+  useEffect(() => {
+    const modeTersimpan =
+      localStorage.getItem("darkMode") === "true";
+
+    setDarkMode(modeTersimpan);
+    document.documentElement.classList.toggle(
+      "dark",
+      modeTersimpan
+    );
+  }, []);
 
   function toggleDarkMode() {
     const modeBaru = !darkMode;
 
+    setDarkMode(modeBaru);
     localStorage.setItem("darkMode", String(modeBaru));
-    document.documentElement.classList.toggle("dark", modeBaru);
 
-    window.dispatchEvent(new Event("storage"));
+    document.documentElement.classList.toggle(
+      "dark",
+      modeBaru
+    );
   }
 
   return (
@@ -79,7 +76,7 @@ export default function Navbar() {
           <Button
             onClick={toggleDarkMode}
             variant="outline"
-            className="border-white bg-transparent text-white hover:bg-white hover:text-utama"
+            className="border-white bg-transparent !text-white hover:bg-white hover:!text-utama"
           >
             {darkMode ? "Mode Terang" : "Mode Gelap"}
           </Button>
