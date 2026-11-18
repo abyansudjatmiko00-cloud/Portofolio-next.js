@@ -81,7 +81,7 @@ export default function Navbar() {
             variant="outline"
             className="border-white bg-transparent text-white hover:bg-white hover:text-utama"
           >
-            {darkMode ? " Terang" : " Gelap"}
+            {darkMode ? "Mode Terang" : "Mode Gelap"}
           </Button>
         </div>
       </nav>
