@@ -1,3 +1,4 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -61,8 +62,6 @@ export async function hapusPesan(formData) {
   revalidatePath("/buku-tamu");
 }
 
-const daftarKategori = ["HTML", "CSS", "JavaScript", "Next.js"];
-
 function bacaProyek(formData) {
   return {
     judul: formData.get("judul").trim(),
@@ -83,17 +82,14 @@ function cekProyek(proyek) {
   if (
     proyek.judul === "" ||
     proyek.slug === "" ||
+    proyek.kategori === "" ||
     proyek.deskripsi === ""
   ) {
-    return "Judul, slug, dan deskripsi wajib diisi.";
+    return "Judul, slug, kategori, dan deskripsi wajib diisi.";
   }
 
   if (proyek.slug.includes(" ")) {
     return "Slug tidak boleh memakai spasi. Gunakan tanda hubung, contoh: buku-tamu.";
-  }
-
-  if (!daftarKategori.includes(proyek.kategori)) {
-    return "Kategori harus HTML, CSS, JavaScript, atau Next.js.";
   }
 
   if (!proyek.gambar_url.startsWith("/proyek/")) {
